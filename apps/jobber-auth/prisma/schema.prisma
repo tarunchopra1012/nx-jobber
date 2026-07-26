@@ -1,6 +1,9 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../../../node_modules/@prisma-clients/jobber-auth"
+  provider            = "prisma-client"
+  output              = "../src/app/prisma/generated"
+  runtime             = "nodejs"
+  moduleFormat        = "cjs"
+  importFileExtension = ""
 }
 
 datasource db {

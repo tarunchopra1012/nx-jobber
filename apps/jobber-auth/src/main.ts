@@ -8,6 +8,14 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
+  // Nest does not auto-load .env; load the workspace-root file so
+  // AUTH_DATABASE_URL is available to the Prisma driver adapter.
+  try {
+    process.loadEnvFile();
+  } catch {
+    // no .env present (e.g. in production where env is injected another way)
+  }
+
   const app = await NestFactory.create(AppModule);
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);

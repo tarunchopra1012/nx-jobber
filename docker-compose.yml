@@ -4,6 +4,6 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=postgres
+      - POSTGRES_USER=jobber
       - POSTGRES_PASSWORD=jobber
       - POSTGRES_DB=jobber-auth
