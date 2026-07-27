@@ -34,12 +34,12 @@ npx nx serve jobber-auth
 Environment variables live in a `.env` file at the **repository root**. It is git-ignored, so each developer creates their own:
 
 ```sh
-AUTH_DATABASE_URL=postgres://postgres:jobber@localhost:5432/jobber-auth?schema=public
+DATABASE_URL=postgres://postgres:jobber@localhost:5432/jobber-auth?schema=public
 ```
 
-| Variable            | Used by       | Description                                         |
-| ------------------- | ------------- | --------------------------------------------------- |
-| `AUTH_DATABASE_URL` | `jobber-auth` | PostgreSQL connection string for the auth database. |
+| Variable       | Used by       | Description                                         |
+| -------------- | ------------- | --------------------------------------------------- |
+| `DATABASE_URL` | `jobber-auth` | PostgreSQL connection string for the auth database. |
 
 The credentials must match `docker-compose.yml`, which starts a `postgres:latest` container on port `5432` with user `postgres`, password `jobber`, and database `jobber-auth`. The compose service declares no named volume, so `docker compose down` discards the data and you will need to re-run the migrations.
 
@@ -59,7 +59,7 @@ This workspace runs **Prisma 7**, which behaves quite differently from Prisma 6.
 
 - **`.env` is not auto-loaded.** It is read explicitly in two places, because the CLI and the app are separate processes: `prisma.config.ts` calls `process.loadEnvFile()` on the root `.env` for `generate`/`migrate`, and `main.ts` does the same for the running service.
 - **The connection URL no longer lives in `schema.prisma`.** The datasource block only names the provider; the URL is supplied by `prisma.config.ts` via Prisma's `env()` helper for Migrate, and by the driver adapter at runtime.
-- **A driver adapter is mandatory at runtime.** `PrismaService` passes `new PrismaPg({ connectionString: process.env.AUTH_DATABASE_URL })` to `super()`; constructing a bare `new PrismaClient()` throws.
+- **A driver adapter is mandatory at runtime.** `PrismaService` passes `new PrismaPg({ connectionString: process.env.DATABASE_URL })` to `super()`; constructing a bare `new PrismaClient()` throws.
 - **The generated client is source code, not a package.** The `prisma-client` generator emits raw TypeScript that has to be compiled with the app, so `output` points into `src/` rather than `node_modules`. It is configured with `moduleFormat = "cjs"` and `importFileExtension = ""` so the output fits the CommonJS NestJS build.
 - **Node ≥ 22.12 is required**, because `prisma migrate dev` `require()`s an ESM-only dependency. See [Prerequisites](#prerequisites).
 

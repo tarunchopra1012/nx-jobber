@@ -50,7 +50,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("AUTH_DATABASE_URL")   // ← connection URL lived here
+  url      = env("DATABASE_URL")   // ← connection URL lived here
 }
 ```
 
@@ -94,7 +94,7 @@ graph TD
   S["schema.prisma<br/>(models + provider only)"] --> G["prisma generate<br/>(prisma-client generator)"]
   G --> T["src/app/prisma/generated/*.ts<br/>(compiled WITH your app)"]
   CFG["prisma.config.ts<br/>(schema path + datasource url)"] --> MIG["prisma migrate dev<br/>(CLI only)"]
-  ENV[".env → AUTH_DATABASE_URL"] --> CFG
+  ENV[".env → DATABASE_URL"] --> CFG
   ENV --> ADP["PrismaPg adapter<br/>new PrismaClient({ adapter })"]
   T --> ADP
 ```
@@ -143,7 +143,7 @@ import { defineConfig, env } from 'prisma/config';
 process.loadEnvFile(path.join(__dirname, '../../.env')); // see §4.2
 export default defineConfig({
   schema: path.join('prisma', 'schema.prisma'),
-  datasource: { url: env('AUTH_DATABASE_URL') }, // required by Migrate
+  datasource: { url: env('DATABASE_URL') }, // required by Migrate
 });
 ```
 
@@ -156,7 +156,7 @@ export default defineConfig({
 **Fix** — load it explicitly in **two** places, because they run in different processes:
 
 - **`prisma.config.ts`** for CLI commands (`generate`, `migrate`).
-- **`main.ts`** for the running Nest app (the adapter reads `process.env.AUTH_DATABASE_URL`).
+- **`main.ts`** for the running Nest app (the adapter reads `process.env.DATABASE_URL`).
 
 ```ts
 // apps/jobber-auth/src/main.ts
@@ -232,7 +232,7 @@ import { PrismaClient } from './generated/client';
 export class PrismaService extends PrismaClient implements OnModuleInit {
   constructor() {
     super({
-      adapter: new PrismaPg({ connectionString: process.env.AUTH_DATABASE_URL }),
+      adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
     });
   }
   async onModuleInit() {
@@ -387,7 +387,7 @@ flowchart TD
     MAIN["main.ts<br/>process.loadEnvFile()"] --> BOOT["NestFactory.create(AppModule)"]
     BOOT --> SVC["PrismaService<br/>new PrismaClient({ adapter: PrismaPg })"]
     GENDIR --> SVC
-    ENV[".env → AUTH_DATABASE_URL"] --> SVC
+    ENV[".env → DATABASE_URL"] --> SVC
     SVC --> PG[("PostgreSQL<br/>localhost:5432")]
   end
   BUILD["nx build"] -->|dependsOn| GEN
