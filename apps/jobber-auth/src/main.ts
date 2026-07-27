@@ -10,7 +10,7 @@ import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   // Nest does not auto-load .env; load the workspace-root file so
-  // AUTH_DATABASE_URL is available to the Prisma driver adapter.
+  // DATABASE_URL is available to the Prisma driver adapter.
   try {
     process.loadEnvFile();
   } catch {
@@ -22,7 +22,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.setGlobalPrefix(globalPrefix);
-  const port = app.get(ConfigService).getOrThrow('AUTH_PORT') || 3000;
+  const port = app.get(ConfigService).getOrThrow('PORT') || 3000;
   await app.listen(port);
   Logger.log(
     `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`,

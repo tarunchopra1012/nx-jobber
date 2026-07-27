@@ -18,6 +18,6 @@ export default defineConfig({
   // Read via process.env (not prisma's strict env() helper) so that
   // `generate`, which needs no URL, still works in CI where it's unset.
   datasource: {
-    url: process.env.AUTH_DATABASE_URL,
+    url: process.env.DATABASE_URL,
   },
 });
