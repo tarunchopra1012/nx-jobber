@@ -6,6 +6,7 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   // Nest does not auto-load .env; load the workspace-root file so
@@ -21,7 +22,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.setGlobalPrefix(globalPrefix);
-  const port = process.env.PORT || 3000;
+  const port = app.get(ConfigService).getOrThrow('AUTH_PORT') || 3000;
   await app.listen(port);
   Logger.log(
     `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`,
