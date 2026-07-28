@@ -15,7 +15,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.setGlobalPrefix(globalPrefix);
   app.use(cookieParser());
-  const port = app.get(ConfigService).getOrThrow('PORT') || 3000;
+  const port = app.get(ConfigService).get('PORT') ?? 3001;
   await app.listen(port);
   Logger.log(
     `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`,

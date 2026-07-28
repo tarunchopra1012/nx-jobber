@@ -57,7 +57,7 @@ Each service owns its own database, and the auth service keeps its Prisma assets
 
 This workspace runs **Prisma 7**, which behaves quite differently from Prisma 6. If you are following a tutorial or older example and something does not line up, [docs/prisma-6-to-7-migration.md](docs/prisma-6-to-7-migration.md) walks through every breaking change, the error each one produces, and the fix applied here. The short version:
 
-- **`.env` is not auto-loaded.** It is read explicitly in two places, because the CLI and the app are separate processes: `prisma.config.ts` calls `process.loadEnvFile()` on the root `.env` for `generate`/`migrate`, and `main.ts` does the same for the running service.
+- **`.env` is not auto-loaded.** It is read explicitly in two places, because the CLI and the app are separate processes: `prisma.config.ts` calls `process.loadEnvFile()` on the root `.env` for `generate`/`migrate`, and the running service loads it through `ConfigModule.forRoot({ isGlobal: true })` in `AppModule`.
 - **The connection URL no longer lives in `schema.prisma`.** The datasource block only names the provider; the URL is supplied by `prisma.config.ts` via Prisma's `env()` helper for Migrate, and by the driver adapter at runtime.
 - **A driver adapter is mandatory at runtime.** `PrismaService` passes `new PrismaPg({ connectionString: process.env.DATABASE_URL })` to `super()`; constructing a bare `new PrismaClient()` throws.
 - **The generated client is source code, not a package.** The `prisma-client` generator emits raw TypeScript that has to be compiled with the app, so `output` points into `src/` rather than `node_modules`. It is configured with `moduleFormat = "cjs"` and `importFileExtension = ""` so the output fits the CommonJS NestJS build.

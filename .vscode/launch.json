@@ -6,22 +6,34 @@
       "request": "launch",
       "name": "Debug jobber-auth with Nx",
       "runtimeExecutable": "npx",
-      "runtimeArgs": [
-        "nx",
-        "serve",
-        "jobber-auth"
-      ],
+      "runtimeArgs": ["nx", "serve", "jobber-auth"],
       "env": {
         "NODE_OPTIONS": "--inspect=9229"
       },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "sourceMaps": true,
       "outFiles": [
         "${workspaceFolder}/apps/jobber-auth/dist/**/*.(m|c|)js",
+        "!**/node_modules/**"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug jobber-jobs with Nx",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["nx", "serve", "jobber-jobs"],
+      "env": {
+        "NODE_OPTIONS": "--inspect=9230"
+      },
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**"],
+      "sourceMaps": true,
+      "outFiles": [
+        "${workspaceFolder}/apps/jobber-jobs/dist/**/*.(m|c|)js",
         "!**/node_modules/**"
       ]
     }

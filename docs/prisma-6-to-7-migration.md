@@ -24,13 +24,13 @@ Related docs: [architecture.md](./architecture.md) · [deployment.md](./deployme
 
 The course targets Prisma 6; this repo installed Prisma **7.9.0**. Prisma 7 is a major release, and each of its breaking changes surfaced in sequence:
 
-| #   | Prisma 6 (course)                                           | Prisma 7 (this repo)                                                      | Fix applied                                             |
-| --- | ----------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------- |
-| 1   | `url` lives in `schema.prisma` datasource                   | `url` **removed** from schema                                             | Added `prisma.config.ts` holding the URL                |
-| 2   | Prisma auto-loads `.env`                                    | No auto-load                                                              | `process.loadEnvFile()` in the config **and** `main.ts` |
-| 3   | `prisma-client-js` → compiled npm package in `node_modules` | `prisma-client` → **raw `.ts` source** meant to be compiled with your app | Output into the source tree + relative import           |
-| 4   | `new PrismaClient()` connects via the schema URL            | A **driver adapter is mandatory** at runtime                              | `@prisma/adapter-pg` passed to `super({ adapter })`     |
-| 5   | Runs on Node 18/20                                          | Needs `require(ESM)` → **Node ≥ 22.12**                                   | Upgraded Node; pinned via `.nvmrc` + `engines`          |
+| #   | Prisma 6 (course)                                           | Prisma 7 (this repo)                                                      | Fix applied                                                      |
+| --- | ----------------------------------------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| 1   | `url` lives in `schema.prisma` datasource                   | `url` **removed** from schema                                             | Added `prisma.config.ts` holding the URL                         |
+| 2   | Prisma auto-loads `.env`                                    | No auto-load                                                              | `process.loadEnvFile()` in the config, `ConfigModule` in the app |
+| 3   | `prisma-client-js` → compiled npm package in `node_modules` | `prisma-client` → **raw `.ts` source** meant to be compiled with your app | Output into the source tree + relative import                    |
+| 4   | `new PrismaClient()` connects via the schema URL            | A **driver adapter is mandatory** at runtime                              | `@prisma/adapter-pg` passed to `super({ adapter })`              |
+| 5   | Runs on Node 18/20                                          | Needs `require(ESM)` → **Node ≥ 22.12**                                   | Upgraded Node; pinned via `.nvmrc` + `engines`                   |
 
 There was also a one-off **syntax typo** (a trailing comma in the generator block) that is not a Prisma-version issue — see [§4.0](#40-not-a-version-issue-the-trailing-comma).
 
@@ -155,19 +155,17 @@ export default defineConfig({
 
 **Fix** — load it explicitly in **two** places, because they run in different processes:
 
-- **`prisma.config.ts`** for CLI commands (`generate`, `migrate`).
-- **`main.ts`** for the running Nest app (the adapter reads `process.env.DATABASE_URL`).
+- **`prisma.config.ts`** for CLI commands (`generate`, `migrate`), via `process.loadEnvFile()`.
+- **`AppModule`** for the running Nest app, via `@nestjs/config` (the adapter gets its URL from `ConfigService`).
 
 ```ts
-// apps/jobber-auth/src/main.ts
-try {
-  process.loadEnvFile();
-} catch {
-  /* prod injects env another way */
-}
+// apps/jobber-auth/src/app/app.module.ts
+imports: [ConfigModule.forRoot({ isGlobal: true }), ...];
 ```
 
-> `process.loadEnvFile()` is a built-in Node API (no `dotenv` dependency), available on Node ≥ 20.12 / 22.
+`forRoot()` reads `.env` from `process.cwd()` (the workspace root under `nx serve`) and merges it into `process.env` synchronously, so the values are in place before any provider is constructed. `isGlobal` makes `ConfigService` injectable everywhere without each module importing `ConfigModule`.
+
+> The CLI side still uses `process.loadEnvFile()`, a built-in Node API (no `dotenv` dependency) available on Node ≥ 20.12 / 22, because `prisma.config.ts` runs outside the Nest DI container.
 
 ---
 
@@ -357,7 +355,7 @@ model User {
 
 **`apps/jobber-auth/src/app/prisma/prisma.service.ts`** — driver adapter + relative import (see §4.4).
 
-**`apps/jobber-auth/src/main.ts`** — `process.loadEnvFile()` before `NestFactory.create`.
+**`apps/jobber-auth/src/app/app.module.ts`** — `ConfigModule.forRoot({ isGlobal: true })` loads `.env` for the running app.
 
 **`apps/jobber-auth/project.json`**
 
@@ -384,7 +382,7 @@ flowchart TD
     GEN --> GENDIR["src/app/prisma/generated/*.ts"]
   end
   subgraph App["Runtime (nx serve)"]
-    MAIN["main.ts<br/>process.loadEnvFile()"] --> BOOT["NestFactory.create(AppModule)"]
+    MAIN["AppModule<br/>ConfigModule.forRoot({ isGlobal: true })"] --> BOOT["NestFactory.create(AppModule)"]
     BOOT --> SVC["PrismaService<br/>new PrismaClient({ adapter: PrismaPg })"]
     GENDIR --> SVC
     ENV[".env → DATABASE_URL"] --> SVC
