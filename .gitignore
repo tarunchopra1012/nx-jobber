@@ -48,3 +48,5 @@ Thumbs.db
 apps/*/src/app/prisma/generated
 .claude
 .cursor
+docs/code/*.md
+docs/jobs-*.md
