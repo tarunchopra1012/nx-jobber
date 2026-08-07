@@ -32,11 +32,20 @@
 
 ## Project
 
-Nx monorepo called `jobber` (NestJS microservices), built by following Michael
-Guay's Udemy course.
+Nx monorepo called `jobber` (NestJS microservices).
 Apps: `jobber-auth`, `jobber-jobs` (each with a matching `*-e2e` project).
 Shared code lives in `libs/nestjs`.
 Stack: Nx, NestJS 11, Prisma 7, PostgreSQL (via docker-compose), Node >= 22.12.
+
+The project structure follows Michael Guay's NestJS microservices course. The
+Prisma 7, Nx 23 and TypeScript 6 work documented below is **not** from the
+course and departs from it deliberately: the course targets an older stack, and
+most of what is written here exists because that stack broke on this one.
+
+The course is a starting point for exploring this stack, not the destination —
+planned work extends well past its scope. Treat the author's repo as
+authoritative only for the areas the course actually covers; anything beyond
+that is this project's own design and should not be reconciled against it.
 
 ## The single most important thing to understand
 
