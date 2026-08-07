@@ -13,4 +13,4 @@ Reference docs for the `jobber` Nx monorepo. Start here.
 
 - Diagrams use [Mermaid](https://mermaid.js.org/) fenced code blocks, which render on GitHub and most Markdown viewers.
 - Commands assume the **workspace root** as the working directory unless stated otherwise.
-- Everything Prisma/Nx here targets **Node ≥ 22.12** (see `.nvmrc` and `package.json` `engines`).
+- Everything Prisma/Nx here requires **Node ≥ 22.12**, the floor enforced by `engines` in `package.json`. Local development runs on **Node 24**, which is what `.nvmrc` pins — so the two files serve different purposes rather than disagreeing.

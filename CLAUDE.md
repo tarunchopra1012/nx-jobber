@@ -71,12 +71,14 @@ change that only works on his older versions.
 
 - `schema.prisma`: generator `provider = "prisma-client"`, `moduleFormat = "cjs"`,
   `importFileExtension = ""`, output into the source tree; datasource has NO `url`.
-- `prisma.config.ts`: holds the datasource `url` from `process.env.AUTH_DATABASE_URL`
+- `prisma.config.ts`: holds the datasource `url` from `process.env.DATABASE_URL`
   (NOT prisma's strict `env()` helper), and loads `.env` via a guarded
   `process.loadEnvFile()` (tolerates a missing `.env` in CI).
 - `PrismaService`: `super({ adapter: new PrismaPg({ connectionString:
-process.env.AUTH_DATABASE_URL }) })`; import PrismaClient via a RELATIVE path
-  to the generated folder (not a bare specifier, not `node_modules`).
+configService.getOrThrow<string>('DATABASE_URL') }) })`. It takes `ConfigService`
+  through the constructor rather than reading `process.env` directly, because the
+  running service gets its values from `ConfigModule`. Import PrismaClient via a
+  RELATIVE path to the generated folder (not a bare specifier, not `node_modules`).
 - `app.module.ts`: `ConfigModule.forRoot({ isGlobal: true })` loads the root `.env`
   for the running service (matches the author's repo). `main.ts` must NOT call
   `process.loadEnvFile()` — only `prisma.config.ts` still does, because the Prisma

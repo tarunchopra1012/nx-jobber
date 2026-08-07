@@ -256,7 +256,7 @@ from .../@prisma/dev/dist/state.cjs not supported.
 
 ```
 # .nvmrc
-22
+24
 ```
 
 ```jsonc
@@ -367,7 +367,7 @@ model User {
 
 **`.gitignore`** — `apps/*/src/app/prisma/generated`.
 
-**`.nvmrc`** = `22`, **`package.json`** → `engines.node >= 22.12.0`, deps `@prisma/adapter-pg`, `pg`, `prisma`/`@prisma/client` `^7.9.0`.
+**`.nvmrc`** = `24`, **`package.json`** → `engines.node >= 22.12.0`, deps `@prisma/adapter-pg`, `pg`, `prisma`/`@prisma/client` `^7.9.0`.
 
 ---
 
@@ -397,7 +397,7 @@ flowchart TD
 
 ```bash
 # Always run on Node >= 22.12 first:
-nvm use                       # reads .nvmrc → Node 22
+nvm use                       # reads .nvmrc → Node 24
 
 # Generate the typed client into src/app/prisma/generated
 nx generate-types jobber-auth
