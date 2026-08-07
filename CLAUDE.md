@@ -24,9 +24,11 @@
 
 # Context & Working Agreement
 
-> Mirrored from `.cursor/rules/jobber.mdc`. That file and this one must be kept in
-> sync — they have already drifted once. `.cursor/.cursorrules` is an older, stale
-> copy; do not treat it as authoritative.
+> This file is the single source of truth for how to work in this repo. Cursor
+> reads it through a thin pointer at `.cursor/rules/jobber.mdc`. Do not copy
+> these rules into that file or anywhere else — an earlier duplicate
+> (`.cursor/.cursorrules`, now deleted) drifted out of sync and ended up
+> instructing agents to reintroduce code that had been removed on purpose.
 
 ## Project
 
@@ -126,4 +128,4 @@ what's relevant to where I am.
 
 As the course progresses, add newly-resolved breaking changes to the
 "DO NOT revert" list so a fresh LLM session doesn't roll my code back to the
-video's older style. Mirror any change into `.cursor/rules/jobber.mdc`.
+video's older style. Add them here and only here — there is nothing to mirror.
